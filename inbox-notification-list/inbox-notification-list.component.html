@@ -1,0 +1,78 @@
+<mat-card>
+<div class="toolbarpanel">
+  <div class="page-title">Уведомления</div>
+</div>
+
+<div class="inbox-notification-list" fxLayout="column" fxFlex="grow">
+  <div class="header" fxLayout="row" fxLayoutAlign="space-between">
+    <div fxLayout="row" fxLayoutAlign="start center">
+      <mat-checkbox (click)="checkAll()" (change)="checkBoxClicked($event)" ></mat-checkbox>
+      <button class="checkbox-menu" type="button" mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="content" furyScrollbar fxFlex="grow">
+    <div class="notification" *ngFor="let notification of notifications$ | async" [class.read]="notification.read" [routerLink]="['../notification', notification.id]"
+         fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px" matRipple>
+      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px" fxFlex="68px">
+        <mat-checkbox class="checkbox" [checked]="notification.checked" (click)="$event.stopPropagation()" (change)="checkBoxMark($event, notification)"></mat-checkbox>
+        <fury-inbox-notification-star [isStarred]="notification.starred" (starred)="toggleStarred(notification)"
+                              (click)="$event.stopPropagation()"></fury-inbox-notification-star>
+      </div>
+
+      <div class="content-container" fxFlex="auto" fxLayout="column" fxLayout.gt-sm="row">
+        <div class="content-wrapper" fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="start center"
+             fxLayoutGap="8px" fxFlex="grow">
+          <div class="subject" fxFlex="noshrink">{{ notification.name }}</div>
+        </div>
+      </div>
+
+      <div class="content-container" fxFlex="auto" fxLayout="column" fxLayout.gt-sm="row">
+          <div class="content-wrapper" fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="start center"
+               fxLayoutGap="8px" fxFlex="grow">
+            <div class="subject" fxFlex="noshrink">{{ notification.content }}</div>
+          </div>
+        </div>
+
+      <div fxLayout="row" fxLayoutAlign="end center" fxFlex="40px" fxFlex.gt-sm="200px">
+        <span class="when" fxHide fxShow.gt-sm>{{ notification.when }}</span>
+        <button class="options" [matMenuTriggerFor]="notificationOptions" [matMenuTriggerData]="{notification: notification}" mat-icon-button (click)="$event.stopPropagation()">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<mat-paginator [length]="notificationsCount"
+[pageSize]="pageSize"
+[pageSizeOptions]="[]">
+</mat-paginator>
+
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="markAllAsUnRead()">
+    <span> Отметить как не прочитанные </span>
+  </button>
+  <button mat-menu-item (click)="markAllAsRead()">
+    <span> Отметить как прочитанные </span>
+  </button>
+</mat-menu>
+
+<mat-menu #notificationOptions="matMenu" >
+  <ng-template matMenuContent  let-notification="notification">
+    <button mat-menu-item (click)="markAsRead(notification)">
+      <mat-icon>markunread_notificationbox</mat-icon>
+      Отметить как прочитанное
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="delete(notification)">
+      <mat-icon>delete</mat-icon>
+      Удалить
+    </button>
+  </ng-template>
+</mat-menu>
+
+</mat-card>
